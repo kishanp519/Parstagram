@@ -1,17 +1,17 @@
 package com.example.parstagram.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.parstagram.HomeAdapter;
 import com.example.parstagram.Post;
@@ -26,11 +26,13 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private final String TAG = "HomeFragment";
+    protected HomeAdapter homeAdapter;
+    protected ArrayList<Post> allPosts;
     private RecyclerView rvPosts;
-    private HomeAdapter homeAdapter;
-    private List<Post> posts;
+    private SwipeRefreshLayout swipeContainer;
 
-    public HomeFragment() {}
+    public HomeFragment() {
+    }
 
     public static HomeFragment newInstance() {
         return new HomeFragment();
@@ -39,6 +41,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -50,16 +53,34 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvPosts = view.findViewById(R.id.rvPosts);
-        posts = new ArrayList<>();
-        homeAdapter = new HomeAdapter(getContext(), posts);
+        allPosts = new ArrayList<>();
+        homeAdapter = new HomeAdapter(getContext(), allPosts);
+        swipeContainer = view.findViewById(R.id.swipeContainer);
+
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "Fetching new data.");
+                queryPosts();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+
         rvPosts.setAdapter(homeAdapter);
         rvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
         queryPosts();
     }
 
-    private void queryPosts() {
+    protected void queryPosts() {
+        homeAdapter.clear();
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
+        query.setLimit(20);
+        query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
@@ -71,7 +92,8 @@ public class HomeFragment extends Fragment {
                 for (Post post : posts) {
                     Log.i(TAG, "Post Details: [Username: " + post.getUser().getUsername() + ", Description: " + post.getDescription() + "]");
                 }
-                posts.addAll(posts);
+
+                allPosts.addAll(posts);
                 homeAdapter.notifyDataSetChanged();
             }
         });

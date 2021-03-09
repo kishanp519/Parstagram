@@ -2,7 +2,6 @@ package com.example.parstagram;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,16 +33,13 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.action_home:
                         fragment = new HomeFragment();
-                        Toast.makeText(MainActivity.this, "HOME", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_compose:
                         fragment = new ComposeFragment();
-                        Toast.makeText(MainActivity.this, "COMPOSE", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_profile:
                     default:
                         fragment = new ProfileFragment();
-                        Toast.makeText(MainActivity.this, "PROFILE", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
@@ -51,6 +47,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        bottomNavigationView.setSelectedItemId(R.id.action_compose);
+        bottomNavigationView.setSelectedItemId(R.id.action_home);
     }
 }

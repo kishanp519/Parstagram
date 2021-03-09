@@ -1,6 +1,5 @@
 package com.example.parstagram.fragments;
 
-import android.app.Activity.*;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,18 +22,14 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.example.parstagram.LoginActivity;
-import com.example.parstagram.MainActivity;
 import com.example.parstagram.Post;
 import com.example.parstagram.R;
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.File;
-import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -42,17 +37,18 @@ public class ComposeFragment extends Fragment {
 
     private final String TAG = "ComposeFragment";
     private final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
+    private final String photoFileName = "photo.jpg";
     private EditText etDescription;
     private ImageView ivImage;
     private Button btnCapture, btnPost, btnLogout;
-    private final String photoFileName = "photo.jpg";
     private File photoFile;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    public ComposeFragment() {}
+    public ComposeFragment() {
+    }
 
 
     public static ComposeFragment newInstance(String param1, String param2) {

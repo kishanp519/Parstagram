@@ -1,7 +1,9 @@
 package com.example.parstagram;
 
 import android.content.Context;
-import android.util.Log;
+import android.graphics.Typeface;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.parse.ParseFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
@@ -30,14 +31,13 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View postView = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false);
-        return new ViewHolder(postView);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Post post = posts.get(position);
-        holder.bind(post);
+        holder.bind(posts.get(position));
     }
 
 
@@ -46,11 +46,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         return posts.size();
     }
 
+    public void clear() {
+        posts.clear();
+        notifyDataSetChanged();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvUsername, tvDescription;
         private ImageView ivImage;
-
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -60,12 +64,13 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         }
 
         public void bind(Post post) {
-            Log.i("HomeAdapter", "Binding " + post.getDescription() + " " + post.getUser().getUsername());
+            tvUsername.setTypeface(tvUsername.getTypeface(), Typeface.BOLD);
             tvUsername.setText(post.getUser().getUsername());
-            tvDescription.setText(post.getDescription());
+            tvDescription.setMovementMethod(LinkMovementMethod.getInstance());
+            tvDescription.setText(Html.fromHtml("<b>" + post.getUser().getUsername() + "</b> " + post.getDescription()));
 
             ParseFile image = post.getImage();
-            if(image != null)
+            if (image != null)
                 Glide.with(context).load(image.getUrl()).into(ivImage);
 
         }
